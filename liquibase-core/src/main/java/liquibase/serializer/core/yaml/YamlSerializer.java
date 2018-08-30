@@ -10,49 +10,44 @@ import liquibase.statement.SequenceCurrentValueFunction;
 import liquibase.statement.SequenceNextValueFunction;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.DataType;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.Constructor;
-import org.yaml.snakeyaml.introspector.GenericProperty;
-import org.yaml.snakeyaml.introspector.Property;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
-import org.yaml.snakeyaml.representer.Representer;
-import org.yaml.snakeyaml.resolver.Resolver;
 
 import java.beans.IntrospectionException;
 import java.lang.reflect.Type;
 import java.util.*;
 
+import org.snakeyaml.engine.api.Dump;
+import org.snakeyaml.engine.api.DumpSettings;
+import org.snakeyaml.engine.api.RepresentToNode;
+import org.snakeyaml.engine.common.FlowStyle;
+import org.snakeyaml.engine.common.ScalarStyle;
+import org.snakeyaml.engine.nodes.Node;
+import org.snakeyaml.engine.nodes.Tag;
+import org.snakeyaml.engine.representer.StandardRepresenter;
+
 public abstract class YamlSerializer implements LiquibaseSerializer {
 
-    protected Yaml yaml;
+    protected Dump yaml;
 
     public YamlSerializer() {
         yaml = createYaml();
     }
 
-    protected Yaml createYaml() {
-        DumperOptions dumperOptions = new DumperOptions();
+    protected Dump createYaml() {
+        DumpSettings dumpSettings = new DumpSettings();
 
         if (isJson()) {
-            dumperOptions.setPrettyFlow(true);
-            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.FLOW);
-            dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.DOUBLE_QUOTED);
-            dumperOptions.setWidth(Integer.MAX_VALUE);
+            dumpSettings.setPrettyFlow(true);
+            dumpSettings.setDefaultFlowStyle(FlowStyle.FLOW);
+            dumpSettings.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED);
+            dumpSettings.setWidth(Integer.MAX_VALUE);
         } else {
-            dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            dumpSettings.setDefaultFlowStyle(FlowStyle.BLOCK);
         }
-        return new Yaml(new Constructor(), getLiquibaseRepresenter(), dumperOptions, getLiquibaseResolver());
+        return new Dump(dumpSettings, getLiquibaseRepresenter(dumpSettings));
     }
 
-    protected LiquibaseRepresenter getLiquibaseRepresenter() {
-        return new LiquibaseRepresenter();
-    }
-
-    protected LiquibaseResolver getLiquibaseResolver() {
-        return new LiquibaseResolver();
+    protected LiquibaseRepresenter getLiquibaseRepresenter(DumpSettings dumpSettings) {
+        return new LiquibaseRepresenter(dumpSettings);
     }
 
     protected boolean isJson() {
@@ -70,10 +65,10 @@ public abstract class YamlSerializer implements LiquibaseSerializer {
     @Override
     public String serialize(LiquibaseSerializable object, boolean pretty) {
         if (isJson()) {
-            String out = yaml.dumpAs(toMap(object), Tag.MAP, DumperOptions.FlowStyle.FLOW);
+            String out = yaml.dumpToString(toMap(object));
             return removeClassTypeMarksFromSerializedJson(out);
         } else {
-            return yaml.dumpAsMap(toMap(object));
+            return yaml.dumpToString(toMap(object));
         }
     }
 
@@ -165,9 +160,10 @@ public abstract class YamlSerializer implements LiquibaseSerializer {
         return json;
     }
 
-    public static class LiquibaseRepresenter extends Representer {
+    public static class LiquibaseRepresenter extends StandardRepresenter {
 
-        public LiquibaseRepresenter() {
+        public LiquibaseRepresenter(DumpSettings dumpSettings) {
+            super(dumpSettings);
             init();
         }
 
@@ -177,6 +173,7 @@ public abstract class YamlSerializer implements LiquibaseSerializer {
             multiRepresenters.put(SequenceCurrentValueFunction.class, new AsStringRepresenter());
         }
 
+        /*
         @Override
         protected Set<Property> getProperties(Class<? extends Object> type) throws IntrospectionException {
             Set<Property> returnSet = new HashSet<>();
@@ -214,30 +211,13 @@ public abstract class YamlSerializer implements LiquibaseSerializer {
                 return ((LiquibaseSerializable) object).getSerializableFieldValue(getName());
             }
         }
+        */
 
-        private class AsStringRepresenter implements Represent {
+        private class AsStringRepresenter implements RepresentToNode {
             @Override
             public Node representData(Object data) {
                 return representScalar(Tag.STR, data.toString());
             }
-        }
-    }
-
-    public static class LiquibaseResolver extends Resolver {
-
-        // Adapted from: CustomResolver.java (YAML Sources)
-        @Override
-        protected void addImplicitResolvers() {
-            // This adds all the YAML standard resolvers except for the one that resolves Date and Timestamp
-            // values automatically.
-            addImplicitResolver(Tag.BOOL, BOOL, "yYnNtTfFoO");
-            addImplicitResolver(Tag.INT, INT, "-+0123456789");
-            addImplicitResolver(Tag.FLOAT, FLOAT, "-+0123456789.");
-            addImplicitResolver(Tag.MERGE, MERGE, "<");
-            addImplicitResolver(Tag.NULL, NULL, "~nN\0");
-            addImplicitResolver(Tag.NULL, EMPTY, null);
-            // Do not "resolve" (read: mess with) dates and timestamps (Tag.TIMESTAMP removed)
-            addImplicitResolver(Tag.YAML, YAML, "!&*");
         }
     }
 }

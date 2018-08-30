@@ -67,7 +67,7 @@
             <includes>
                 <include>ch.qos.logback:logback-classic</include>
                 <include>ch.qos.logback:logback-core</include>
-                <include>org.yaml:snakeyaml</include>
+                <include>org.snakeyaml:snakeyaml-engine</include>
             </includes>
         </dependencySet>
 
@@ -75,7 +75,7 @@
             <outputDirectory>sdk/lib-sdk</outputDirectory>
             <excludes>
                 <exclude>org.liquibase:liquibase-core</exclude>
-                <exclude>org.yaml:snakeyaml</exclude>
+                <exclude>org.snakeyaml:snakeyaml-engine</exclude>
             </excludes>
         </dependencySet>
     </dependencySets>

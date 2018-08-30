@@ -30,7 +30,7 @@ public class YamlChangeLogSerializer extends YamlSerializer implements ChangeLog
         containerMap.put("databaseChangeLog", maps);
 
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(out, LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()));
-        writer.write(yaml.dumpAsMap(containerMap));
+        writer.write(yaml.dumpToString(containerMap));
         writer.write("\n");
         writer.flush();
     }

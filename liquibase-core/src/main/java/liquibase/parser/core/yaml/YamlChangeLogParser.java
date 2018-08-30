@@ -10,8 +10,9 @@ import liquibase.parser.ChangeLogParser;
 import liquibase.parser.core.ParsedNode;
 import liquibase.resource.ResourceAccessor;
 import liquibase.util.StreamUtil;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
+
+import org.snakeyaml.engine.api.Load;
+import org.snakeyaml.engine.api.LoadSettings;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,15 +22,14 @@ public class YamlChangeLogParser extends YamlParser implements ChangeLogParser {
 
     @Override
     public DatabaseChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters, ResourceAccessor resourceAccessor) throws ChangeLogParseException {
-        Yaml yaml = new Yaml(new SafeConstructor());
-
+        Load loader = new Load(new LoadSettings());
         try {
             InputStream changeLogStream = StreamUtil.singleInputStream(physicalChangeLogLocation, resourceAccessor);
             if (changeLogStream == null) {
                 throw new ChangeLogParseException(physicalChangeLogLocation + " does not exist");
             }
     
-            Map parsedYaml = parseYamlStream(physicalChangeLogLocation, yaml, changeLogStream);
+            Map parsedYaml = parseYamlStream(physicalChangeLogLocation, loader, changeLogStream);
 
             if ((parsedYaml == null) || parsedYaml.isEmpty()) {
                 throw new ChangeLogParseException("Empty file " + physicalChangeLogLocation);
@@ -85,10 +85,10 @@ public class YamlChangeLogParser extends YamlParser implements ChangeLogParser {
         }
     }
     
-    private Map parseYamlStream(String physicalChangeLogLocation, Yaml yaml, InputStream changeLogStream) throws ChangeLogParseException {
+    private Map parseYamlStream(String physicalChangeLogLocation, Load load, InputStream changeLogStream) throws ChangeLogParseException {
         Map parsedYaml;
         try {
-            parsedYaml = (Map) yaml.load(changeLogStream);
+            parsedYaml = (Map) load.loadFromInputStream(changeLogStream);
         } catch (Exception e) {
             throw new ChangeLogParseException("Syntax error in file " + physicalChangeLogLocation + ": " + e.getMessage(), e);
         }

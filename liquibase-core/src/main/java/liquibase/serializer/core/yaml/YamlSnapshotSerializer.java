@@ -14,9 +14,6 @@ import liquibase.structure.DatabaseObjectCollection;
 import liquibase.structure.DatabaseObjectComparator;
 import liquibase.util.ISODateFormat;
 import liquibase.util.StringUtil;
-import org.yaml.snakeyaml.nodes.Node;
-import org.yaml.snakeyaml.nodes.Tag;
-import org.yaml.snakeyaml.representer.Represent;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -24,6 +21,12 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.math.BigInteger;
 import java.util.*;
+
+import org.snakeyaml.engine.api.DumpSettings;
+import org.snakeyaml.engine.api.RepresentToNode;
+import org.snakeyaml.engine.nodes.Node;
+import org.snakeyaml.engine.nodes.Tag;
+import org.snakeyaml.engine.representer.StandardRepresenter;
 
 public class YamlSnapshotSerializer extends YamlSerializer implements SnapshotSerializer {
 
@@ -91,8 +94,8 @@ public class YamlSnapshotSerializer extends YamlSerializer implements SnapshotSe
         return super.toMap(object);
     }
 
-    protected LiquibaseRepresenter getLiquibaseRepresenter() {
-        return new SnapshotLiquibaseRepresenter();
+    protected LiquibaseRepresenter getLiquibaseRepresenter(DumpSettings dumpSettings) {
+        return new SnapshotLiquibaseRepresenter(dumpSettings);
     }
 
     @Override
@@ -101,6 +104,11 @@ public class YamlSnapshotSerializer extends YamlSerializer implements SnapshotSe
     }
 
     public static class SnapshotLiquibaseRepresenter extends LiquibaseRepresenter {
+
+
+        public SnapshotLiquibaseRepresenter(DumpSettings dumpSettings) {
+            super(dumpSettings);
+        }
 
         protected void init() {
             multiRepresenters.put(DatabaseFunction.class, new TypeStoringAsStringRepresenter());
@@ -114,7 +122,7 @@ public class YamlSnapshotSerializer extends YamlSerializer implements SnapshotSe
             multiRepresenters.put(Enum.class, new TypeStoringAsStringRepresenter());
         }
 
-        private class TypeStoringAsStringRepresenter implements Represent {
+        private class TypeStoringAsStringRepresenter implements RepresentToNode {
             @Override
             public Node representData(Object data) {
                 String value;

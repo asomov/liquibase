@@ -92,7 +92,7 @@
 
         <!-- Liquibase core dependencies and required jars versions -->
         <org.springframework.version>4.3.8.RELEASE</org.springframework.version>
-        <snakeyaml.version>1.18</snakeyaml.version>
+        <snakeyaml-engine.version>0.1-SNAPSHOT</snakeyaml-engine.version>
 
         <!-- Liquibase SDK sdk/lib-sdk required libraries versions -->
         <commons-cli.version>1.4</commons-cli.version>
@@ -276,9 +276,9 @@
             </dependency>
 
             <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>${snakeyaml.version}</version>
+                <groupId>org.snakeyaml</groupId>
+                <artifactId>snakeyaml-engine</artifactId>
+                <version>${snakeyaml-engine.version}</version>
                 <optional>true</optional>
             </dependency>
 

@@ -81,8 +81,8 @@
 			<artifactId>servlet-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
+			<groupId>org.snakeyaml</groupId>
+			<artifactId>snakeyaml-engine</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.codehaus.groovy</groupId>
@@ -253,7 +253,7 @@
 							javax.servlet.*;version="[2.6,4)";resolution:=optional,
 							javax.sql.*,
 							org.osgi.*,
-							org.yaml.snakeyaml.*,
+							org.snakeyaml.*,
 							*;resolution:=optional
 						</Import-Package>
 					</instructions>

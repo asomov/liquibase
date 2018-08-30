@@ -42,8 +42,8 @@
             <artifactId>maven-verifier</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
+            <groupId>org.snakeyaml</groupId>
+            <artifactId>snakeyaml-engine</artifactId>
             <optional>true</optional>
         </dependency>
 

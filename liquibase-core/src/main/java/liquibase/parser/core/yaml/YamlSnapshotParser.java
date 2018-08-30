@@ -12,18 +12,19 @@ import liquibase.resource.ResourceAccessor;
 import liquibase.snapshot.DatabaseSnapshot;
 import liquibase.snapshot.RestoredDatabaseSnapshot;
 import liquibase.util.StreamUtil;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 
+import org.snakeyaml.engine.api.Load;
+import org.snakeyaml.engine.api.LoadSettings;
+
 public class YamlSnapshotParser extends YamlParser implements SnapshotParser {
 
     @Override
     public DatabaseSnapshot parse(String path, ResourceAccessor resourceAccessor) throws LiquibaseParseException {
-        Yaml yaml = new Yaml(new SafeConstructor());
+        Load load = new Load(new LoadSettings());
 
         try (
             InputStream stream = StreamUtil.singleInputStream(path, resourceAccessor);
@@ -32,7 +33,7 @@ public class YamlSnapshotParser extends YamlParser implements SnapshotParser {
                 throw new LiquibaseParseException(path + " does not exist");
             }
     
-            Map parsedYaml = getParsedYamlFromInputStream(yaml, stream);
+            Map parsedYaml = getParsedYamlFromInputStream(load, stream);
 
             Map rootList = (Map) parsedYaml.get("snapshot");
             if (rootList == null) {
@@ -64,14 +65,14 @@ public class YamlSnapshotParser extends YamlParser implements SnapshotParser {
         }
     }
     
-    private Map getParsedYamlFromInputStream(Yaml yaml, InputStream stream) throws LiquibaseParseException {
+    private Map getParsedYamlFromInputStream(Load yaml, InputStream stream) throws LiquibaseParseException {
         Map parsedYaml;
         try (
             InputStreamReader inputStreamReader = new InputStreamReader(
                 stream, LiquibaseConfiguration.getInstance().getConfiguration(GlobalConfiguration.class).getOutputEncoding()
             );
         ) {
-            parsedYaml = (Map) yaml.load(inputStreamReader);
+            parsedYaml = (Map) yaml.loadAllFromReader(inputStreamReader);
         } catch (Exception e) {
             throw new LiquibaseParseException("Syntax error in " + getSupportedFileExtensions()[0] + ": " + e.getMessage(), e);
         }

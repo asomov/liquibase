@@ -35,8 +35,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.yaml</groupId>
-            <artifactId>snakeyaml</artifactId>
+            <groupId>org.snakeyaml</groupId>
+            <artifactId>snakeyaml-engine</artifactId>
             <optional>true</optional>
         </dependency>
     </dependencies>
@@ -83,9 +83,9 @@
                                     <destFileName>liquibase.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.yaml</groupId>
-                                    <artifactId>snakeyaml</artifactId>
-                                    <version>${snakeyaml.version}</version>
+                                    <groupId>org.snakeyaml</groupId>
+                                    <artifactId>snakeyaml-engine</artifactId>
+                                    <version>${snakeyaml-engine.version}</version>
                                     <type>jar</type>
                                     <overWrite>false</overWrite>
                                     <outputDirectory>${project.build.directory}/lib/</outputDirectory>
