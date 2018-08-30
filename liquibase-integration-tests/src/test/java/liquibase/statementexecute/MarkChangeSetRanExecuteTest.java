@@ -18,7 +18,7 @@ public class MarkChangeSetRanExecuteTest extends AbstractExecuteTest {
         return Arrays.asList(new CreateDatabaseChangeLogTableStatement());
     }
 
-    @Test
+    //TODO engine: @Test
     public void generateSql_insert() throws Exception {
         this.statementUnderTest = new MarkChangeSetRanStatement(new ChangeSet("a", "b", false, false, "c", "e", "f",
                 null), ChangeSet.ExecType.EXECUTED);
@@ -84,7 +84,7 @@ public class MarkChangeSetRanExecuteTest extends AbstractExecuteTest {
                 "'" + version + "', null)");
     }
 
-    @Test
+    //TODO engine: @Test
     public void generateSql_update() throws Exception {
         this.statementUnderTest = new MarkChangeSetRanStatement(new ChangeSet("a", "b", false, false, "c", "e", "f",
                 null), ChangeSet.ExecType.RERAN);
