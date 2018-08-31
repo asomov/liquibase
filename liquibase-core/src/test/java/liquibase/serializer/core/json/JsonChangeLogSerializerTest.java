@@ -42,7 +42,7 @@ public class JsonChangeLogSerializerTest {
         //when
         String serializedJson = new JsonChangeLogSerializer().serialize(changeSet, true);
         //then
-        assertEquals("{\n" +
+        String expected = "{\n" +
                 "  \"changeSet\": {\n" +
                 "    \"id\": \"1\",\n" +
                 "    \"author\": \"nvoxland\",\n" +
@@ -103,7 +103,8 @@ public class JsonChangeLogSerializerTest {
                 "      }]\n" +
                 "    \n" +
                 "  }\n" +
-                "}\n", serializedJson);
+                "}\n";
+        assertEquals(expected, serializedJson);
     }
 
     private PreconditionContainer newSamplePreconditions() {
