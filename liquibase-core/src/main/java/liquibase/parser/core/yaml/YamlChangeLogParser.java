@@ -12,7 +12,7 @@ import liquibase.resource.ResourceAccessor;
 import liquibase.util.StreamUtil;
 
 import org.snakeyaml.engine.api.Load;
-import org.snakeyaml.engine.api.LoadSettings;
+import org.snakeyaml.engine.api.LoadSettingsBuilder;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +22,7 @@ public class YamlChangeLogParser extends YamlParser implements ChangeLogParser {
 
     @Override
     public DatabaseChangeLog parse(String physicalChangeLogLocation, ChangeLogParameters changeLogParameters, ResourceAccessor resourceAccessor) throws ChangeLogParseException {
-        Load loader = new Load(new LoadSettings());
+        Load loader = new Load(new LoadSettingsBuilder().build());
         try {
             InputStream changeLogStream = StreamUtil.singleInputStream(physicalChangeLogLocation, resourceAccessor);
             if (changeLogStream == null) {

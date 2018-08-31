@@ -13,6 +13,7 @@ import java.util.*;
 
 import org.snakeyaml.engine.api.Dump;
 import org.snakeyaml.engine.api.DumpSettings;
+import org.snakeyaml.engine.api.DumpSettingsBuilder;
 import org.snakeyaml.engine.api.RepresentToNode;
 import org.snakeyaml.engine.common.FlowStyle;
 import org.snakeyaml.engine.common.ScalarStyle;
@@ -29,17 +30,18 @@ public abstract class YamlSerializer implements LiquibaseSerializer {
     }
 
     protected Dump createYaml() {
-        DumpSettings dumpSettings = new DumpSettings();
+        DumpSettingsBuilder builder = new DumpSettingsBuilder();
 
         if (isJson()) {
-            dumpSettings.setPrettyFlow(true);
-            dumpSettings.setDefaultFlowStyle(FlowStyle.FLOW);
-            dumpSettings.setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED);
-            dumpSettings.setWidth(Integer.MAX_VALUE);
+            builder.setPrettyFlow(true)
+                    .setDefaultFlowStyle(FlowStyle.FLOW)
+                    .setDefaultScalarStyle(ScalarStyle.DOUBLE_QUOTED)
+                    .setWidth(Integer.MAX_VALUE);
         } else {
-            dumpSettings.setDefaultFlowStyle(FlowStyle.BLOCK);
+            builder.setDefaultFlowStyle(FlowStyle.BLOCK);
         }
-        return new Dump(dumpSettings, getLiquibaseRepresenter(dumpSettings));
+        DumpSettings settings = builder.build();
+        return new Dump(settings, getLiquibaseRepresenter(settings));
     }
 
     protected LiquibaseRepresenter getLiquibaseRepresenter(DumpSettings dumpSettings) {

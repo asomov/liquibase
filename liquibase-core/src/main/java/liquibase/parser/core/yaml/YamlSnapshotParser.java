@@ -18,13 +18,13 @@ import java.io.InputStreamReader;
 import java.util.Map;
 
 import org.snakeyaml.engine.api.Load;
-import org.snakeyaml.engine.api.LoadSettings;
+import org.snakeyaml.engine.api.LoadSettingsBuilder;
 
 public class YamlSnapshotParser extends YamlParser implements SnapshotParser {
 
     @Override
     public DatabaseSnapshot parse(String path, ResourceAccessor resourceAccessor) throws LiquibaseParseException {
-        Load load = new Load(new LoadSettings());
+        Load load = new Load(new LoadSettingsBuilder().build());
 
         try (
             InputStream stream = StreamUtil.singleInputStream(path, resourceAccessor);
