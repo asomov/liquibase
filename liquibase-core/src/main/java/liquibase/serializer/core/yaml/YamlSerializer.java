@@ -1,8 +1,6 @@
 package liquibase.serializer.core.yaml;
 
 import liquibase.change.ConstraintsConfig;
-import liquibase.changelog.ChangeSet;
-import liquibase.exception.UnexpectedLiquibaseException;
 import liquibase.serializer.LiquibaseSerializable;
 import liquibase.serializer.LiquibaseSerializer;
 import liquibase.statement.DatabaseFunction;
@@ -11,8 +9,6 @@ import liquibase.statement.SequenceNextValueFunction;
 import liquibase.structure.core.Column;
 import liquibase.structure.core.DataType;
 
-import java.beans.IntrospectionException;
-import java.lang.reflect.Type;
 import java.util.*;
 
 import org.snakeyaml.engine.api.Dump;
@@ -172,46 +168,6 @@ public abstract class YamlSerializer implements LiquibaseSerializer {
             multiRepresenters.put(SequenceNextValueFunction.class, new AsStringRepresenter());
             multiRepresenters.put(SequenceCurrentValueFunction.class, new AsStringRepresenter());
         }
-
-        /*
-        @Override
-        protected Set<Property> getProperties(Class<? extends Object> type) throws IntrospectionException {
-            Set<Property> returnSet = new HashSet<>();
-            LiquibaseSerializable serialzableType = null;
-            try {
-                if (type.equals(ChangeSet.class)) {
-                    serialzableType = new ChangeSet("x", "y", false, false, null, null, null, null);
-                } else if (LiquibaseSerializable.class.isAssignableFrom(type)) {
-                    serialzableType = (LiquibaseSerializable) type.newInstance();
-                } else {
-                    return super.getProperties(type);
-                }
-            } catch (InstantiationException | IllegalAccessException e) {
-                throw new UnexpectedLiquibaseException(e);
-            }
-            for (String property : serialzableType.getSerializableFields()) {
-                returnSet.add(new LiquibaseProperty(property, String.class, String.class));
-            }
-            return returnSet;
-        }
-
-        private static class LiquibaseProperty extends GenericProperty {
-
-            private LiquibaseProperty(String name, Class<?> aClass, Type aType) {
-                super(name, aClass, aType);
-            }
-
-            @Override
-            public void set(Object object, Object value) throws Exception {
-                //not supported
-            }
-
-            @Override
-            public Object get(Object object) {
-                return ((LiquibaseSerializable) object).getSerializableFieldValue(getName());
-            }
-        }
-        */
 
         private class AsStringRepresenter implements RepresentToNode {
             @Override
